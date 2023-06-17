@@ -16,6 +16,8 @@ import axios from 'axios';
 function* rootSaga() {
     yield takeEvery('FETCH_GENRE', fetchGenre);
     yield takeEvery('FETCH_MOVIES', fetchAllMovies);
+    yield takeEvery('FETCH_ALL_GENRES', fetchAllGenres);
+    yield takeEvery('POST_MOVIE', postMovie);
 }
 
 // const movie = useSelector(store=> store.movieId);
@@ -24,7 +26,7 @@ function* fetchGenre() {
     const state = storeInstance.getState();
     const movie = state.movieId;
     try{
-        const genre = yield axios.get(`/api/genre/${movie.id}`);
+        const genre = yield axios.get(`/api/genre/pick/${movie.id}`);
         console.log('heres the genre=>', genre);
         yield put({type: 'SET_GENRES', payload: genre})
     } catch(error){
@@ -45,6 +47,26 @@ function* fetchAllMovies() {
         console.log('get all error');
     }
         
+}
+
+function* fetchAllGenres(){
+    try{
+        const genres = yield axios.get('/api/genre/all-genres');
+        console.log('OUR GENRES!!!! =>', genres);
+        yield put({type: 'SET_ALL_GENRES', payload: genres.data})
+    } catch{
+        console.log('Problems in fetchAllGenres');
+    }
+}
+
+function* postMovie(){
+    const state = storeInstance.getState();
+    const movie = state.movieToAdd;
+    try{
+        yield axios.post('/api/movie', movie)
+    }catch{
+        console.log('postMovie isnt working');
+    }
 }
 
 // Create sagaMiddleware
@@ -69,10 +91,26 @@ const genres = (state = [], action) => {
             return state;
     }
 }
+const allGenres = (state = [], action) => {
+    switch (action.type) {
+        case 'SET_ALL_GENRES':
+            return action.payload;
+        default:
+            return state;
+    }
+}
 
 const movieId = (state = {}, action)=>{
     switch(action.type){
         case 'MOVIE_DETAILS':
+            return action.payload;
+        default:
+            return state;
+    }
+}
+const movieToAdd = (state = {}, action)=>{
+    switch(action.type){
+        case 'MOVIE_TO_ADD':
             return action.payload;
         default:
             return state;
@@ -84,7 +122,9 @@ const storeInstance = createStore(
     combineReducers({
         movies,
         genres,
-        movieId
+        movieId,
+        allGenres,
+        movieToAdd
     }),
     // Add sagaMiddleware to our store
     applyMiddleware(sagaMiddleware, logger),

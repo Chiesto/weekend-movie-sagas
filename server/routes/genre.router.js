@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../modules/pool')
 
-router.get('/:id', (req, res) => {
+router.get('/pick/:id', (req, res) => {
   // Add query to get all genres
 
   console.log('req.paraaaaaammmmmsssssssss =>>>>>>>>>>>',req.params);
@@ -19,5 +19,19 @@ router.get('/:id', (req, res) => {
       console.log('problems in our genre GET', error);
     })
 });
+router.get('/all-genres', (req, res) => {
+  // Add query to get all genres
+
+  
+  const queryText = `SELECT * FROM genres;`
+  pool.query(queryText)
+    .then(response=>{
+      console.log('Should be ALL the genres=>',response.rows);
+      res.send(response.rows);
+    }).catch(error=>{
+      console.log('problems in our genre GET', error);
+    })
+});
+
 
 module.exports = router;

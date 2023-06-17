@@ -13,13 +13,17 @@ function Details(){
     useEffect(() => {
         dispatch({ type: 'FETCH_GENRE' });
     }, []);
-console.log('OUR GENRES', genres.data);
+
     return(
         <div>
             <div>
                 <h1>{movie.title}</h1>
                 <img src={movie.poster}/>
-                <p>Genres: {genres.data.map(genre=><li>{genre}</li>)}</p>
+                {genres.data? (
+                    <p>Genres: {genres.data.map(genre=><li key={genre}>{genre}</li>)}</p>
+                ) : (
+                    <p></p>
+                )}
                 <p>{movie.description}</p>
             </div>
 

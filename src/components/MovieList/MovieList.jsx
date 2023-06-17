@@ -17,7 +17,6 @@ function MovieList() {
     useEffect(() => {
         dispatch({ type: 'FETCH_MOVIES' });
     }, []);
-console.log('MOVIES LIST =>>>>>' ,movies);
     return (
         <main>
             <h1>MovieList</h1>
