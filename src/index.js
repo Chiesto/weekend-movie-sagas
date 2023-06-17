@@ -1,28 +1,38 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './components/App/App.js';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 // Provider allows us to use redux within our react app
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import logger from 'redux-logger';
 // Import saga middleware
 import createSagaMiddleware from 'redux-saga';
 import { takeEvery, put } from 'redux-saga/effects';
 import axios from 'axios';
 
+
 // Create the rootSaga generator function
 function* rootSaga() {
+    yield takeEvery('FETCH_GENRE', fetchGenre);
     yield takeEvery('FETCH_MOVIES', fetchAllMovies);
 }
 
+// const movie = useSelector(store=> store.movieId);
+//used to get our list of genres from the DB
 function* fetchGenre() {
+    const state = storeInstance.getState();
+    const movie = state.movieId;
     try{
-        const genre = yield axios.get('/api/genre');
+        const genre = yield axios.get(`/api/genre/${movie.id}`);
         console.log('heres the genre=>', genre);
         yield put({type: 'SET_GENRES', payload: genre})
+    } catch(error){
+        console.log('fetchGenre DIDNT WORK', error);
     }
 }
+
+
 
 function* fetchAllMovies() {
     // get all movies from the DB
