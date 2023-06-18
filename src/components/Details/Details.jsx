@@ -17,10 +17,11 @@ function Details(){
     console.log('RECENT MOVIE =>', recentMovie);
     console.log('isEdit =>', isEdit);
 
-    const handleSaveClick = ()=>{
-        // dispatch({type: 'FETCH_DETAILS'});
-        setId(recentMovie.movie_id[0]);
+    const handleSaveClick = (event)=>{
+        event.preventDefault();
+        dispatch({type: 'FETCH_DETAILS'});
         console.log('heres our ID=>', recentMovie.movie_id[0])
+        setId(recentMovie.movie_id[0]);
         const movieToDispatch = {
             id,
             title,
@@ -34,6 +35,10 @@ function Details(){
             description
         }})
         setIsEdit(false);
+    }
+    const handleEditClick = (event) =>{
+        event.preventDefault();
+        setIsEdit(true)
     }
 
 
@@ -80,7 +85,7 @@ function Details(){
             {isEdit?(
                 <button onClick={handleSaveClick}>Save</button>
             ):(
-                <button onClick={()=>setIsEdit(true)}>Edit</button>
+                <button onClick={handleEditClick}>Edit</button>
             )}
             
         </div>
