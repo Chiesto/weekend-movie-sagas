@@ -4,19 +4,35 @@ import { useHistory } from "react-router-dom";
 
 
 function Details(){
+    
     const [isEdit, setIsEdit] = useState(false);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [id, setId] = useState(0);
+
     const dispatch = useDispatch();
     const history = useHistory();
     const movieDetails = useSelector(store=>store.movieDetails);
+    const recentMovie = movieDetails[movieDetails.length-1];
+    console.log('RECENT MOVIE =>', recentMovie);
+    console.log('isEdit =>', isEdit);
 
     const handleSaveClick = ()=>{
-        //initiate the PUT function to edit our data on the DB
-        dispatch('EDIT_MOVIE', {
+        // dispatch({type: 'FETCH_DETAILS'});
+        setId(recentMovie.movie_id[0]);
+        console.log('heres our ID=>', recentMovie.movie_id[0])
+        const movieToDispatch = {
+            id,
             title,
             description
-        })
-        //get the updated data from the DB
-        dispatch('FETCH_DETAILS')
+        }
+        console.log('movie we are dispatching', movieToDispatch);
+        //initiate the PUT function to edit our data on the DB
+        dispatch({type:'EDIT_MOVIE', payload: {
+            id,
+            title,
+            description
+        }})
         setIsEdit(false);
     }
 
@@ -24,9 +40,6 @@ function Details(){
     useEffect(()=>{
         dispatch({type: 'FETCH_DETAILS'});
     }, []);
-    const recentMovie = movieDetails[movieDetails.length-1];
-    console.log('RECENT MOVIE =>', recentMovie);
-    console.log('isEdit =>', isEdit);
     return(
         <div>
             <div>
@@ -34,14 +47,14 @@ function Details(){
                     <> 
                     {isEdit?(
                         <>
-                            <input placeholder={recentMovie.title[0]}/>
+                            <input onChange={event=>setTitle(event.target.value)} placeholder={recentMovie.title[0]}/>
                             <br/>
                             <img src={recentMovie.poster[0]}/>
                         
                             
                             <p>Genres: {recentMovie.genres.map(genre=><li key={genre}>{genre}</li>)}</p>
                         
-                            <input type='text' placeholder={recentMovie.description[0]}/>
+                            <input type='text' onChange={event=>setDescription(event.target.value)} placeholder={recentMovie.description[0]}/>
                         </>
                     ):(
                         <>
@@ -51,7 +64,7 @@ function Details(){
                             
                             <p>Genres: {recentMovie.genres.map(genre=><li key={genre}>{genre}</li>)}</p>
                         
-                            <p>{movieDetails[movieDetails.length-1].description[0]}</p>
+                            <p>{recentMovie.description[0]}</p>
                         </>
                     )}
                         
@@ -65,7 +78,7 @@ function Details(){
 
             <button onClick={()=>history.push('/')}>Go Back</button>
             {isEdit?(
-                <button onClick={()=>setIsEdit(false)}>Save</button>
+                <button onClick={handleSaveClick}>Save</button>
             ):(
                 <button onClick={()=>setIsEdit(true)}>Edit</button>
             )}

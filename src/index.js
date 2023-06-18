@@ -19,8 +19,18 @@ function* rootSaga() {
     yield takeEvery('FETCH_ALL_GENRES', fetchAllGenres);
     yield takeEvery('POST_MOVIE', postMovie);
     yield takeEvery('FETCH_DETAILS', fetchAllDetails);
+    yield takeEvery('EDIT_MOVIE', editMovie);
 }
 
+function* editMovie(action){
+    try{
+        console.log('heres our action.payload for editMovie',action.payload);
+        yield axios.put('/api/movie', action.payload);
+        yield put({type: 'FETCH_DETAILS'});
+    }catch(error){
+        console.log('editMovie IS NOT WORKING =>', error);
+    }
+}
 // post the ID of our selected movie to the DB so we can refresh and
 // still have that information. Using a new table so we can have a history.
 function* postSelectedMovie(action) {

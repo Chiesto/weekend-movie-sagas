@@ -58,11 +58,12 @@ router.post('/', (req, res) => {
 router.get('/allDetails', (req, res) =>{
 
   //query to select the desired data from our DB tables
-  const queryText = `SELECT selected_movie.id,JSON_AGG(movies.title) AS title, JSON_AGG(movies.poster) AS poster, JSON_AGG(movies.description) AS description, JSON_AGG(genres.name) AS genres FROM selected_movie
+  const queryText = `SELECT selected_movie.id,JSON_AGG(movies.id) AS movie_id,JSON_AGG(movies.title) AS title, JSON_AGG(movies.poster) AS poster, JSON_AGG(movies.description) AS description, JSON_AGG(genres.name) AS genres FROM selected_movie
   JOIN movies ON movies.id = selected_movie.movie_id
   JOIN movies_genres ON movies.id = movies_genres.movie_id
   JOIN genres ON genres.id = movies_genres.genre_id
-  GROUP BY selected_movie.id;`;
+  GROUP BY selected_movie.id
+  ORDER BY selected_movie.id;`;
 
   pool.query(queryText)
     .then(response=>{
@@ -91,6 +92,42 @@ router.post('/allDetails/:id', (req, res) =>{
     }).catch(error=>{
       res.sendStatus(500);
       console.log('problems in our selected movie POST', error);
+    })
+})
+
+//PUT router to change the value of the title or description
+router.put('/', (req, res)=>{
+  console.log('This is the data im editing', req.body);
+  let queryText = '';
+  let values = [];
+
+  //update the query text based on what information is entered
+  if(req.body.title&&req.body.description){
+    values = [req.body.id, req.body.title, req.body.description];
+    queryText = `
+    UPDATE movies 
+    SET title = $2, description = $3
+    WHERE id = $1`
+  } else if(!req.body.description&&req.body.title){
+    values = [req.body.id, req.body.title];
+    queryText = `
+    UPDATE movies 
+    SET title = $2
+    WHERE id = $1`
+  }else if(req.body.description&&!req.body.title){
+    values = [req.body.id, req.body.description];
+    queryText = `
+    UPDATE movies 
+    SET description = $2
+    WHERE id = $1`
+  }
+  console.log('VALUES =>', values);
+  pool.query(queryText, values)
+    .then(response=>{
+      res.sendStatus(200);
+    }).catch(error=>{
+      console.log('problems in our PUT function', error);
+      res.sendStatus(500);
     })
 })
 
