@@ -10,8 +10,12 @@ function MovieList() {
 
     
     const handleClick = (movie)=>{
-        dispatch({type: 'MOVIE_DETAILS', payload: movie});
+        dispatch({ type: 'POST_SELECTED_MOVIE', payload: movie.id });
         history.push('/details');
+    }
+
+    const handleClick2 = ()=>{
+        history.push('/addMovie');
     }
 
     useEffect(() => {
@@ -19,6 +23,7 @@ function MovieList() {
     }, []);
     return (
         <main>
+            <button onClick={handleClick2}>Add Movie!</button>
             <h1>MovieList</h1>
             <section className="movies">
                 {movies.map(movie => {

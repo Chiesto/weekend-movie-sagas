@@ -14,23 +14,38 @@ import axios from 'axios';
 
 // Create the rootSaga generator function
 function* rootSaga() {
-    yield takeEvery('FETCH_GENRE', fetchGenre);
+    yield takeEvery('POST_SELECTED_MOVIE', postSelectedMovie);
     yield takeEvery('FETCH_MOVIES', fetchAllMovies);
     yield takeEvery('FETCH_ALL_GENRES', fetchAllGenres);
     yield takeEvery('POST_MOVIE', postMovie);
+    yield takeEvery('FETCH_DETAILS', fetchAllDetails);
 }
 
-// const movie = useSelector(store=> store.movieId);
-//used to get our list of genres from the DB
-function* fetchGenre() {
-    const state = storeInstance.getState();
-    const movie = state.movieId;
+// post the ID of our selected movie to the DB so we can refresh and
+// still have that information. Using a new table so we can have a history.
+function* postSelectedMovie(action) {
     try{
-        const genre = yield axios.get(`/api/genre/pick/${movie.id}`);
-        console.log('heres the genre=>', genre);
-        yield put({type: 'SET_GENRES', payload: genre})
+        console.log('selected movie ID=>', action.payload);
+        yield axios.post(`/api/movie/allDetails/${action.payload}`);
+        console.log('checking for errors');
+        
+
+        //once we add a movie we want to update the store
+        yield dispatch({type: 'FETCH_DETAILS'});
     } catch(error){
-        console.log('fetchGenre DIDNT WORK', error);
+        console.log('post selected movie DIDNT WORK', error);
+    }
+}
+
+//fetching details of the selected movie
+function* fetchAllDetails() {
+    try {
+        const movieDetails = yield axios.get(`/api/movie/allDetails`);
+        console.log('get all:', movieDetails.data);
+        yield put({ type: 'SET_DETAILS', payload: movieDetails.data });
+
+    } catch {
+        console.log('get all error');
     }
 }
 
@@ -116,6 +131,14 @@ const movieToAdd = (state = {}, action)=>{
             return state;
     }
 }
+const movieDetails = (state={}, action)=>{
+    switch(action.type){
+        case 'SET_DETAILS':
+            return action.payload;
+        default:
+            return state;
+    }
+}
 
 // Create one store that all components can use
 const storeInstance = createStore(
@@ -124,7 +147,8 @@ const storeInstance = createStore(
         genres,
         movieId,
         allGenres,
-        movieToAdd
+        movieToAdd,
+        movieDetails
     }),
     // Add sagaMiddleware to our store
     applyMiddleware(sagaMiddleware, logger),

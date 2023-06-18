@@ -4,14 +4,17 @@ import MovieList from '../MovieList/MovieList';
 import Details from '../Details/Details';
 import AddMovie from '../AddMovie/AddMovie';
 
+
 function App() {
   return (
     <div className="App">
       <h1>The Movies Saga!</h1>
       <Router>        
         <Route path="/" exact>
-          <AddMovie/>
           <MovieList />
+        </Route>
+        <Route path='/addMovie'>
+          <AddMovie/>
         </Route>
         
         {/* Details page */}

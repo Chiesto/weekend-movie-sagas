@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 
 function AddMovie(){
+    const history = useHistory()
     const dispatch = useDispatch();
     const [selectedGenre, setSelectedGenre] = useState('');
     const [title, setTitle] = useState('');
@@ -29,18 +31,21 @@ function AddMovie(){
     }, []);
 
     return(
-        <form onSubmit={handleSubmit}>
-            <input required type="text" placeholder="Movie Title" onChange={event=>setTitle(event.target.value)}/>
-            <input required type="text" placeholder="Poster Image URL" onChange={event=>setPoster(event.target.value)}/>
-            <input required type="text" placeholder="Movie Description" onChange={event=>setDescription(event.target.value)}/>
-            <select value={selectedGenre} onChange={event=>setSelectedGenre(event.target.value)}>
-                <option value=''>Select a genre</option>
-                {genres.map(genre=>(
-                    <option key={genre.id} value={genre.name}>{genre.name}</option>
-                ))}
-            </select>
-            <button type="submit">Add Movie</button>
-        </form>
+        <div>
+            <form onSubmit={handleSubmit}>
+                <input required type="text" placeholder="Movie Title" onChange={event=>setTitle(event.target.value)}/>
+                <input required type="text" placeholder="Poster Image URL" onChange={event=>setPoster(event.target.value)}/>
+                <input required type="text" placeholder="Movie Description" onChange={event=>setDescription(event.target.value)}/>
+                <select value={selectedGenre} onChange={event=>setSelectedGenre(event.target.value)}>
+                    <option value=''>Select a genre</option>
+                    {genres.map(genre=>(
+                        <option key={genre.id} value={genre.name}>{genre.name}</option>
+                    ))}
+                </select>
+                <button type="submit">Save</button>
+            </form>
+            <button onClick={()=>history.push('/')}>Cancel</button>
+        </div>
     )
 }
 export default AddMovie;
