@@ -11,7 +11,7 @@ function MovieList() {
     
     const handleClick = (movie)=>{
         dispatch({ type: 'POST_SELECTED_MOVIE', payload: movie.id });
-        history.push('/details');
+        history.push(`/details/${movie.id}`);
     }
 
     const handleClick2 = ()=>{

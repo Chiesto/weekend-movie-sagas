@@ -41,7 +41,7 @@ function* postSelectedMovie(action) {
         
 
         //once we add a movie we want to update the store
-        yield dispatch({type: 'FETCH_DETAILS'});
+        yield put({type: 'FETCH_DETAILS'});
     } catch(error){
         console.log('post selected movie DIDNT WORK', error);
     }

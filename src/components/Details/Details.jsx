@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 
 
 function Details(){
@@ -17,23 +18,19 @@ function Details(){
     console.log('RECENT MOVIE =>', recentMovie);
     console.log('isEdit =>', isEdit);
 
+    const movieId = useParams();
+
     const handleSaveClick = (event)=>{
+
         event.preventDefault();
-        dispatch({type: 'FETCH_DETAILS'});
-        console.log('heres our ID=>', recentMovie.movie_id[0])
-        setId(recentMovie.movie_id[0]);
         const movieToDispatch = {
-            id,
+            id: movieId.id,
             title,
             description
         }
         console.log('movie we are dispatching', movieToDispatch);
         //initiate the PUT function to edit our data on the DB
-        dispatch({type:'EDIT_MOVIE', payload: {
-            id,
-            title,
-            description
-        }})
+        dispatch({type:'EDIT_MOVIE', payload: movieToDispatch});
         setIsEdit(false);
     }
     const handleEditClick = (event) =>{
