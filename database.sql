@@ -13,7 +13,11 @@ CREATE TABLE "genres" (
   "id" SERIAL PRIMARY KEY,
   "name" VARCHAR(80) NOT NULL
 );
-
+ --NEW table to hold a history of user's selected movies
+CREATE TABLE "selected_movie"(
+	"id" SERIAL PRIMARY KEY,
+	"movie_id" INT REFERENCES "movies" NOT NULL
+);
 
 -- JUNCTION TABLE
 -- Movies can have multiple genres and each genre can be applied to multiple movies
